@@ -5,6 +5,21 @@
  */
 
 function sleep(milliseconds) {
+  return new Promise((resolve, reject) => {
+    const startTime = new Date().getTime();
+    let currentTime = startTime;
+
+    // Busy wait until the specified time has passed
+    while (currentTime - startTime < milliseconds) {
+      currentTime = new Date().getTime();
+    }
+
+    resolve();
+  });
 }
+
+// Example usage
+// sleep(5000).then((result) => console.log(result));
+// console.log(2);
 
 module.exports = sleep;

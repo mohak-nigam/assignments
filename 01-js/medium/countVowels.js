@@ -5,8 +5,18 @@
   Once you've implemented the logic, test your code by running
 */
 
+const isVowel = (char) => {
+  return "aeiou".includes(char);
+};
+
 function countVowels(str) {
-    // Your code here
+  // Your code here
+  const array = str.replace(/\s/g, "").toLowerCase().split("");
+  let ans = 0;
+  array.forEach((char) => {
+    if (isVowel(char)) ans++;
+  });
+  return ans;
 }
 
 module.exports = countVowels;
