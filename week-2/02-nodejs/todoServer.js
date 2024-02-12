@@ -39,11 +39,84 @@
 
   Testing the server - run `npm run test-todoServer` command in terminal
  */
-  const express = require('express');
-  const bodyParser = require('body-parser');
-  
-  const app = express();
-  
-  app.use(bodyParser.json());
-  
-  module.exports = app;
+const express = require("express");
+const { v4: uuidv4 } = require("uuid");
+
+const app = express();
+
+app.use(express.json());
+
+let todos = [];
+
+app.get("/todos", (req, res) => {
+  res.json(todos);
+});
+
+app.get("/todos/:id", (req, res) => {
+  const { id } = req.params;
+  // const numericId = parseInt(id, 10);
+  const specificTodo = todos.filter((item) => item.id === id);
+  specificTodo.length
+    ? res.json(specificTodo[0])
+    : res.status(404).send("Todo not found");
+});
+
+app.post("/todos", (req, res) => {
+  const todo = req.body;
+  const todoId = uuidv4();
+  todos = [...todos, { id: todoId, ...todo }];
+
+  res.status(201).json({ id: todoId });
+});
+
+app.put("/todos/:id", (req, res) => {
+  const { id } = req.params;
+  const updatedTodo = req.body;
+
+  // let targetItem = todos.find((item) => item.id === id);
+
+  // if (targetItem) {
+  //   targetItem = { id: targetItem.id, ...updatedTodo };
+  //   console.log({ targetItem });
+  //   todos = todos.map((item) => {
+  //     if (item.id === id) {
+  //       item = { ...targetItem };
+  //     }
+  //     return item;
+  //   });
+  //   console.log({ todos });
+  //   res.status(200).send("todo updates");
+  // } else {
+  //   res.status(404).send("No such todo found");
+  // }
+
+  const targetIndex = todos.findIndex((item) => item.id === id);
+
+  if (targetIndex === -1) {
+    res.status(404).send("No such todo found");
+  } else {
+    todos[targetIndex].title = updatedTodo.title;
+    todos[targetIndex].description = updatedTodo.description;
+
+    res.status(200).send("todo updated");
+  }
+});
+
+app.delete("/todos/:id", (req, res) => {
+  const { id } = req.params;
+  const targetIndex = todos.findIndex((item) => item.id === id);
+
+  if (targetIndex === -1) {
+    res.status(404).send("No such todo found");
+  } else {
+    todos = todos.filter((item) => item.id !== id);
+
+    res.send("todo deleted");
+  }
+});
+
+app.listen(3000, () => {
+  console.log("server running at 3000");
+});
+
+module.exports = app;

@@ -17,12 +17,58 @@ const fs = require("fs");
 const path = require("path");
 const app = express();
 
-app.get("/", (req, res) => {
-  res.send("Hello, Worldaas!");
+const directory = path.join(__dirname, "./files/");
+
+// app.get("/", (req, res) => {
+//   res.send("Hello, Worldaas!");
+// });
+
+app.get("/files", (req, res) => {
+  fs.readdir(directory, (err, files) => {
+    if (err) {
+      //console.error('Error reading files:', err);
+      res.status(500).json({ error: "Failed to retrieve files" });
+    } else {
+      res.json(files);
+    }
+  });
+});
+
+// Path PARAMETER
+app.get("/file/:filename", (req, res) => {
+  const { filename } = req.params;
+
+  const filePath = path.join(__dirname, "./files/", filename);
+
+  fs.readFile(filePath, "utf-8", (err, fileContent) => {
+    if (err) {
+      res.status(404).send("File not found");
+    } else {
+      res.status(200).send(fileContent);
+    }
+  });
+});
+
+// QUERY PARAMS
+app.get("/file", (req, res) => {
+  const { filename } = req.query;
+
+  const filePath = path.join(__dirname, "./files/", filename);
+
+  fs.readFile(filePath, "utf-8", (err, fileContent) => {
+    if (err) {
+      res.status(404).send("File not found");
+    } else {
+      res.status(200).send(fileContent);
+    }
+  });
+});
+
+app.all("*", (req, res) => {
+  res.status(404).send("Route not found");
 });
 
 app.listen(3000, () => {
-  console.log("Server is running on port 3000");
+  console.log("server started");
 });
-
 module.exports = app;
