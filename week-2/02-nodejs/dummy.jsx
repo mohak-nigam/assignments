@@ -64,7 +64,6 @@ function App() {
                 <Route path="/page-not-found" exact component={PageNotFound} />
                 <Route
                   path="/something-went-wrong"
-                  exact
                   component={InternalServerError}
                 />
                 <Route
